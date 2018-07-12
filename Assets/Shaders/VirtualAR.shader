@@ -13,7 +13,6 @@
 
 	SubShader{
         ZWrite Off
-        ZTest Always
 
 		Pass{
 			CGPROGRAM
@@ -68,7 +67,8 @@
 
 				// black color for out-of-range pixels
 				if (uv2.x >= 1 || uv2.y >= 1 || uv2.x <= 0 || uv2.y <= 0) {
-					return fixed4(0, 0, 0, 1);
+					//return fixed4(0, 0, 0, 1);
+					return tex2D(_MainTex, i.uv);
 				}
 				else {
 					offset = 0.5 - _Alpha * 0.5 + _Disparity * 0.5 - _Disparity * sign(inputUV.x < 0.5);
@@ -76,12 +76,8 @@
 					uv3 = uv2;
 					uv3.x = uv2.x * _Alpha + offset;
 
-					#ifdef REALITY_RGBA
-					return tex2D(_MainTex, uv3);
-					#else
-					// TODO: Implement correctly.
-					return tex2D(_MainTex, uv3).rrra;
-					#endif
+					//return tex2D(_MainTex, uv3);
+					return tex2D(_MainTex, i.uv);
 				}
 			}
 			ENDCG
