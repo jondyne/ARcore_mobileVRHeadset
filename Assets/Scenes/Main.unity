@@ -414,11 +414,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1914245111}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 816b289ef451e094f9ae174fb4cf8db0, type: 3}
+  m_Script: {fileID: 11500000, guid: 7adaad24e5cfc4075ab2844dd32f28b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_OverrideMaterial: 1
-  m_Material: {fileID: 2100000, guid: 073a6ad12009a4af3b36dc17af8b7dd0, type: 2}
+  overrideMaterial: 1
+  material: {fileID: 2100000, guid: 073a6ad12009a4af3b36dc17af8b7dd0, type: 2}
 --- !u!114 &1914245114
 MonoBehaviour:
   m_ObjectHideFlags: 0
