@@ -418,7 +418,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   overrideMaterial: 1
-  material: {fileID: 2100000, guid: 073a6ad12009a4af3b36dc17af8b7dd0, type: 2}
+  material: {fileID: 2100000, guid: c66c7493ad2124392a25c78e7e12effe, type: 2}
 --- !u!114 &1914245114
 MonoBehaviour:
   m_ObjectHideFlags: 0
