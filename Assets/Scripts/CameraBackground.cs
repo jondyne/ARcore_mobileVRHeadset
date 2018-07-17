@@ -14,6 +14,12 @@ public sealed class CameraBackground : MonoBehaviour {
     [SerializeField]
     Material material;
 
+    [SerializeField]
+    float fov = 1.6f;
+
+    [SerializeField]
+    float disparity;
+
     #endregion
 
     #region Public properties
@@ -40,49 +46,74 @@ public sealed class CameraBackground : MonoBehaviour {
 
     bool cameraHasBeenSetup;
     bool cameraSetupThrewException;
+    bool shaderRatioConfigured;
     Camera currentCamera;
+
+    WebCamTexture webCamTexture;
 
     #endregion
 
     #region Unity methods
 
-    void Awake() {
+    void Start() {
         currentCamera = GetComponent<Camera>();
-        BackgroundRenderer = new ARBackgroundRenderer();
-        if (!overrideMaterial)
+
+        if (!overrideMaterial) {
             material = null;
+        }
+
+        foreach (var webCamDevice in WebCamTexture.devices) {
+            if (!webCamDevice.isFrontFacing) {
+                webCamTexture = new WebCamTexture(webCamDevice.name);
+                webCamTexture.Play();
+                break;
+            }
+        }
+
+        if (webCamTexture == null) {
+            Debug.LogWarning("No back-facing camera found, using first available.");
+            webCamTexture = new WebCamTexture();
+        }
+
+        Material.SetFloat("_FOV", fov);
+        Material.SetFloat("_Disparity", disparity);
     }
 
-    void OnEnable() {
-        BackgroundRenderer.mode = ARRenderMode.MaterialAsBackground;
-        BackgroundRenderer.camera = currentCamera;
+    void Update() {
+        if (!shaderRatioConfigured && webCamTexture.width > 100) {
+            // Alpha is the pixel density ratio of width over height, needed for displaying the
+            // final image without skew
+            Debug.Log("WebCamTexture has initialized, dimensions: " +
+                      $"{webCamTexture.width}x{webCamTexture.height}");
+            var alpha = webCamTexture.height / (float) Screen.height * Screen.width * 0.5f /
+                        webCamTexture.width;
+            Debug.Log($"Setting shader pixel density ratio to {alpha}");
+            Material.SetFloat("_Alpha", alpha);
 
-        NotifyCameraSubsystem();
-        ARSubsystemManager.cameraFrameReceived += OnCameraFrameReceived;
-        ARSubsystemManager.systemStateChanged += OnSystemStateChanged;
-    }
+            shaderRatioConfigured = true;
+            webCamTexture.Stop();
+            webCamTexture = null;
 
-    void OnDisable() {
-        BackgroundRenderer.mode = ARRenderMode.StandardBackground;
-        ARSubsystemManager.cameraFrameReceived -= OnCameraFrameReceived;
-        ARSubsystemManager.systemStateChanged -= OnSystemStateChanged;
-        cameraHasBeenSetup = false;
-        cameraSetupThrewException = false;
-
-        // Tell the camera subsystem to stop doing work
-        var cameraSubsystem = ARSubsystemManager.cameraSubsystem;
-        if (cameraSubsystem != null) {
-            if (cameraSubsystem.Camera == currentCamera)
-                cameraSubsystem.Camera = null;
-
-            if (cameraSubsystem.Material == Material)
-                cameraSubsystem.Material = null;
+            StartBackgroundRenderer();
         }
     }
 
     #endregion
 
     #region Camera handling
+
+    void StartBackgroundRenderer() {
+        Debug.Log("Starting ARBackgroundRenderer");
+
+        BackgroundRenderer = new ARBackgroundRenderer {
+            mode = ARRenderMode.StandardBackground,
+            camera = currentCamera
+        };
+
+        NotifyCameraSubsystem();
+        ARSubsystemManager.cameraFrameReceived += OnCameraFrameReceived;
+        ARSubsystemManager.systemStateChanged += OnSystemStateChanged;
+    }
 
     void SetupCameraIfNecessary() {
         if (cameraHasBeenSetup) {
@@ -137,9 +168,9 @@ public sealed class CameraBackground : MonoBehaviour {
     }
 
     void OnSystemStateChanged(ARSystemStateChangedEventArgs eventArgs) {
-        if (eventArgs.state < ARSystemState.SessionInitializing && BackgroundRenderer != null) {
-            BackgroundRenderer.mode = ARRenderMode.StandardBackground;
-        }
+//        if (eventArgs.state < ARSystemState.SessionInitializing && BackgroundRenderer != null) {
+//            BackgroundRenderer.mode = ARRenderMode.StandardBackground;
+//        }
     }
 
     #endregion

@@ -4,9 +4,9 @@
 	{
 		_MainTex("Texture", 2D) = "white" {}
 
-		_FOV("FOV", Range(1, 2)) = 1.6
-		_Disparity("Disparity", Range(0, 0.3)) = 0.1
-		_Alpha("Alpha", Range(0, 2.0)) = 1.0
+		[HideInInspector] _FOV ("FOV", Range(1, 2)) = 1.6
+		[HideInInspector] _Disparity ("Disparity", Range(0, 0.3)) = 0.0
+		[HideInInspector] _Alpha ("Alpha", Range(0, 2.0)) = 1.0
 	}
 
 	// For GLES3
