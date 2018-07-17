@@ -83,12 +83,14 @@ public sealed class CameraBackground : MonoBehaviour {
         if (!shaderRatioConfigured && webCamTexture.width > 100) {
             // Alpha is the pixel density ratio of width over height, needed for displaying the
             // final image without skew
-            Debug.Log("WebCamTexture has initialized, dimensions: " +
-                      $"{webCamTexture.width}x{webCamTexture.height}");
-            var alpha = webCamTexture.height / (float) Screen.height * Screen.width * 0.5f /
-                        webCamTexture.width;
-            Debug.Log($"Setting shader pixel density ratio to {alpha}");
-            Material.SetFloat("_Alpha", alpha);
+//            Debug.Log("WebCamTexture has initialized, dimensions: " +
+//                      $"{webCamTexture.width}x{webCamTexture.height}");
+//            var alpha = (webCamTexture.height / (float) Screen.height) *
+//                        ((Screen.width * 0.5f) / webCamTexture.width);
+//            Debug.Log($"Setting shader pixel density ratio to {alpha}, screen: {Screen.width}x{Screen.height}");
+//            Material.SetFloat("_Alpha", alpha);
+            // TODO: Understand _Alpha calculation better, 0.5 is needed but on S7 it's 0.66
+            Material.SetFloat("_Alpha", 0.5f);
 
             shaderRatioConfigured = true;
             webCamTexture.Stop();
