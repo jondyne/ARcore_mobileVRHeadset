@@ -7,9 +7,6 @@ public sealed class SeeThroughController : MonoBehaviour {
     #region Editor public fields
 
     [SerializeField]
-    bool overrideMaterial;
-
-    [SerializeField]
     Material material;
 
     [SerializeField]
@@ -42,7 +39,6 @@ public sealed class SeeThroughController : MonoBehaviour {
 
     #region Private fields
 
-    bool cameraHasBeenSetup;
     bool cameraSetupThrewException;
     Camera currentCamera;
 
@@ -52,10 +48,6 @@ public sealed class SeeThroughController : MonoBehaviour {
 
     void Start() {
         currentCamera = GetComponent<Camera>();
-
-        if (!overrideMaterial) {
-            material = null;
-        }
 
         Material.SetFloat("_FOV", fov);
         Material.SetFloat("_Disparity", disparity);
@@ -77,70 +69,29 @@ public sealed class SeeThroughController : MonoBehaviour {
 
         Renderer = new SeeThroughRenderer {
             Mode = ARRenderMode.MaterialAsBackground,
-            Camera = currentCamera
+            Camera = currentCamera,
+            BackgroundMaterial = Material
         };
 
-        NotifyCameraSubsystem();
-        ARSubsystemManager.cameraFrameReceived += OnCameraFrameReceived;
-        ARSubsystemManager.systemStateChanged += OnSystemStateChanged;
-    }
-
-    void SetupCameraIfNecessary() {
-        if (cameraHasBeenSetup) {
-            Renderer.Mode = ARRenderMode.MaterialAsBackground;
-        }
-
-        if (overrideMaterial) {
-            if (Renderer.BackgroundMaterial != Material) {
-                Material = Material;
-            }
-
-            return;
-        }
-
-        var cameraSubsystem = ARSubsystemManager.cameraSubsystem;
-        if (cameraSetupThrewException || cameraHasBeenSetup || (cameraSubsystem == null)) {
-            return;
-        }
-
-        // Try to create a material from the plugin's provided shader.
-        var shaderName = "";
-        if (!cameraSubsystem.TryGetShaderName(ref shaderName)) {
-            return;
-        }
-
-        var shader = Shader.Find(shaderName);
-        if (shader == null) {
-            // If an exception is thrown, then something is irrecoverably wrong.
-            // Set this flag so we don't try to do this every frame.
-            cameraSetupThrewException = true;
-
-            throw new InvalidOperationException(
-                $"Could not find shader named \"{shaderName}\" required for video overlay on " +
-                $"camera subsystem named \"{cameraSubsystem.SubsystemDescriptor.id}\".");
-        }
-
-        Material = new Material(shader);
-        cameraHasBeenSetup = (Material != null);
-        NotifyCameraSubsystem();
-    }
-
-    void OnCameraFrameReceived(ARCameraFrameEventArgs eventArgs) {
-        SetupCameraIfNecessary();
-    }
-
-    void NotifyCameraSubsystem() {
         var cameraSubsystem = ARSubsystemManager.cameraSubsystem;
         if (cameraSubsystem != null) {
             cameraSubsystem.Camera = currentCamera;
             cameraSubsystem.Material = Material;
         }
+
+        ARSubsystemManager.cameraFrameReceived += OnCameraFrameReceived;
     }
 
-    void OnSystemStateChanged(ARSystemStateChangedEventArgs eventArgs) {
-//        if (eventArgs.state < ARSystemState.SessionInitializing && BackgroundRenderer != null) {
-//            BackgroundRenderer.mode = ARRenderMode.StandardBackground;
-//        }
+    void SetupCameraIfNecessary() {
+        Renderer.Mode = ARRenderMode.MaterialAsBackground;
+
+        if (Renderer.BackgroundMaterial != Material) {
+            Material = Material;
+        }
+    }
+
+    void OnCameraFrameReceived(ARCameraFrameEventArgs eventArgs) {
+        SetupCameraIfNecessary();
     }
 
     #endregion
