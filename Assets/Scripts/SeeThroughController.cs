@@ -3,9 +3,7 @@ using UnityEngine;
 using UnityEngine.XR;
 using UnityEngine.XR.ARFoundation;
 
-// NOTE: Modified version of ARFoundation's ARCameraBackground, fixing the material override bug.
-
-public sealed class CameraBackground : MonoBehaviour {
+public sealed class SeeThroughController : MonoBehaviour {
     #region Editor public fields
 
     [SerializeField]
@@ -29,8 +27,8 @@ public sealed class CameraBackground : MonoBehaviour {
         set {
             material = value;
 
-            BackgroundRenderer.mode = ARRenderMode.MaterialAsBackground;
-            BackgroundRenderer.backgroundMaterial = material;
+            Renderer.mode = ARRenderMode.MaterialAsBackground;
+            Renderer.backgroundMaterial = material;
 
             if (ARSubsystemManager.cameraSubsystem != null) {
                 ARSubsystemManager.cameraSubsystem.Material = material;
@@ -38,7 +36,7 @@ public sealed class CameraBackground : MonoBehaviour {
         }
     }
 
-    public ARBackgroundRenderer BackgroundRenderer { get; private set; }
+    public ARBackgroundRenderer Renderer { get; private set; }
 
     #endregion
 
@@ -46,10 +44,11 @@ public sealed class CameraBackground : MonoBehaviour {
 
     bool cameraHasBeenSetup;
     bool cameraSetupThrewException;
-    bool shaderRatioConfigured;
     Camera currentCamera;
 
-    WebCamTexture webCamTexture;
+//    bool shaderRatioConfigured;
+//    WebCamTexture webCamTexture;
+    RenderTexture renderTexture;
 
     #endregion
 
@@ -62,53 +61,59 @@ public sealed class CameraBackground : MonoBehaviour {
             material = null;
         }
 
-        foreach (var webCamDevice in WebCamTexture.devices) {
-            if (!webCamDevice.isFrontFacing) {
-                webCamTexture = new WebCamTexture(webCamDevice.name);
-                webCamTexture.Play();
-                break;
-            }
-        }
+//        foreach (var webCamDevice in WebCamTexture.devices) {
+//            if (!webCamDevice.isFrontFacing) {
+//                webCamTexture = new WebCamTexture(webCamDevice.name);
+//                webCamTexture.Play();
+//                break;
+//            }
+//        }
+//
+//        if (webCamTexture == null) {
+//            Debug.LogWarning("No back-facing camera found, using first available.");
+//            webCamTexture = new WebCamTexture();
+//        }
 
-        if (webCamTexture == null) {
-            Debug.LogWarning("No back-facing camera found, using first available.");
-            webCamTexture = new WebCamTexture();
-        }
+        renderTexture = new RenderTexture(Screen.width, Screen.height, 1);
+        currentCamera.targetTexture = renderTexture;
 
         Material.SetFloat("_FOV", fov);
         Material.SetFloat("_Disparity", disparity);
+
+        // TODO: Understand _Alpha calculation better, 0.5 is needed but on S7 it's 0.66
+        Material.SetFloat("_Alpha", 0.5f);
+
+        StartRenderer();
     }
 
-    void Update() {
-        if (!shaderRatioConfigured && webCamTexture.width > 100) {
-            // Alpha is the pixel density ratio of width over height, needed for displaying the
-            // final image without skew
+//    void Update() {
+//        if (!shaderRatioConfigured && webCamTexture.width > 100) {
+//            // Alpha is the pixel density ratio of width over height, needed for displaying the
+//            // final image without skew
 //            Debug.Log("WebCamTexture has initialized, dimensions: " +
 //                      $"{webCamTexture.width}x{webCamTexture.height}");
 //            var alpha = (webCamTexture.height / (float) Screen.height) *
 //                        ((Screen.width * 0.5f) / webCamTexture.width);
 //            Debug.Log($"Setting shader pixel density ratio to {alpha}, screen: {Screen.width}x{Screen.height}");
 //            Material.SetFloat("_Alpha", alpha);
-            // TODO: Understand _Alpha calculation better, 0.5 is needed but on S7 it's 0.66
-            Material.SetFloat("_Alpha", 0.5f);
-
-            shaderRatioConfigured = true;
-            webCamTexture.Stop();
-            webCamTexture = null;
-
-            StartBackgroundRenderer();
-        }
-    }
+//
+//            shaderRatioConfigured = true;
+//            webCamTexture.Stop();
+//            webCamTexture = null;
+//
+//            StartRenderer();
+//        }
+//    }
 
     #endregion
 
     #region Camera handling
 
-    void StartBackgroundRenderer() {
+    void StartRenderer() {
         Debug.Log("Starting ARBackgroundRenderer");
 
-        BackgroundRenderer = new ARBackgroundRenderer {
-            mode = ARRenderMode.StandardBackground,
+        Renderer = new ARBackgroundRenderer {
+            mode = ARRenderMode.MaterialAsBackground,
             camera = currentCamera
         };
 
@@ -119,11 +124,11 @@ public sealed class CameraBackground : MonoBehaviour {
 
     void SetupCameraIfNecessary() {
         if (cameraHasBeenSetup) {
-            BackgroundRenderer.mode = ARRenderMode.MaterialAsBackground;
+            Renderer.mode = ARRenderMode.MaterialAsBackground;
         }
 
         if (overrideMaterial) {
-            if (BackgroundRenderer.backgroundMaterial != Material) {
+            if (Renderer.backgroundMaterial != Material) {
                 Material = Material;
             }
 
