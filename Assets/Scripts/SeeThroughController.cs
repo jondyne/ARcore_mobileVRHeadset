@@ -27,8 +27,8 @@ public sealed class SeeThroughController : MonoBehaviour {
         set {
             material = value;
 
-            Renderer.mode = ARRenderMode.MaterialAsBackground;
-            Renderer.backgroundMaterial = material;
+            Renderer.Mode = ARRenderMode.MaterialAsBackground;
+            Renderer.BackgroundMaterial = material;
 
             if (ARSubsystemManager.cameraSubsystem != null) {
                 ARSubsystemManager.cameraSubsystem.Material = material;
@@ -46,9 +46,6 @@ public sealed class SeeThroughController : MonoBehaviour {
     bool cameraSetupThrewException;
     Camera currentCamera;
 
-//    bool shaderRatioConfigured;
-//    WebCamTexture webCamTexture;
-
     #endregion
 
     #region Unity methods
@@ -60,46 +57,16 @@ public sealed class SeeThroughController : MonoBehaviour {
             material = null;
         }
 
-//        foreach (var webCamDevice in WebCamTexture.devices) {
-//            if (!webCamDevice.isFrontFacing) {
-//                webCamTexture = new WebCamTexture(webCamDevice.name);
-//                webCamTexture.Play();
-//                break;
-//            }
-//        }
-//
-//        if (webCamTexture == null) {
-//            Debug.LogWarning("No back-facing camera found, using first available.");
-//            webCamTexture = new WebCamTexture();
-//        }
-
         Material.SetFloat("_FOV", fov);
         Material.SetFloat("_Disparity", disparity);
 
-        // TODO: Understand _Alpha calculation better, 0.5 is needed but on S7 it's 0.66
+//        var alpha = (webCamTexture.height / (float) Screen.height) *
+//                    ((Screen.width * 0.5f) / webCamTexture.width);
+        // TODO: Understand _Alpha calculation ↑ better, 0.5 is needed but on S7 it's 0.66
         Material.SetFloat("_Alpha", 0.5f);
 
         StartRenderer();
     }
-
-//    void Update() {
-//        if (!shaderRatioConfigured && webCamTexture.width > 100) {
-//            // Alpha is the pixel density ratio of width over height, needed for displaying the
-//            // final image without skew
-//            Debug.Log("WebCamTexture has initialized, dimensions: " +
-//                      $"{webCamTexture.width}x{webCamTexture.height}");
-//            var alpha = (webCamTexture.height / (float) Screen.height) *
-//                        ((Screen.width * 0.5f) / webCamTexture.width);
-//            Debug.Log($"Setting shader pixel density ratio to {alpha}, screen: {Screen.width}x{Screen.height}");
-//            Material.SetFloat("_Alpha", alpha);
-//
-//            shaderRatioConfigured = true;
-//            webCamTexture.Stop();
-//            webCamTexture = null;
-//
-//            StartRenderer();
-//        }
-//    }
 
     #endregion
 
@@ -109,8 +76,8 @@ public sealed class SeeThroughController : MonoBehaviour {
         Debug.Log("Starting ARBackgroundRenderer");
 
         Renderer = new SeeThroughRenderer {
-            mode = ARRenderMode.MaterialAsBackground,
-            camera = currentCamera
+            Mode = ARRenderMode.MaterialAsBackground,
+            Camera = currentCamera
         };
 
         NotifyCameraSubsystem();
@@ -120,11 +87,11 @@ public sealed class SeeThroughController : MonoBehaviour {
 
     void SetupCameraIfNecessary() {
         if (cameraHasBeenSetup) {
-            Renderer.mode = ARRenderMode.MaterialAsBackground;
+            Renderer.Mode = ARRenderMode.MaterialAsBackground;
         }
 
         if (overrideMaterial) {
-            if (Renderer.backgroundMaterial != Material) {
+            if (Renderer.BackgroundMaterial != Material) {
                 Material = Material;
             }
 

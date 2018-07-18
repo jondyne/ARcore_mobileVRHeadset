@@ -8,83 +8,63 @@ using UnityEngine.XR;
 public class SeeThroughRenderer {
     #region Public properties
 
-    public event Action backgroundRendererChanged = null;
-
-    /// <summary>
-    ///   <para>The Material used for AR rendering.</para>
-    /// </summary>
-    public Material backgroundMaterial {
-        get { return this.m_BackgroundMaterial; }
+    public Material BackgroundMaterial {
+        get { return backgroundMaterial; }
         set {
-            if ((UnityEngine.Object) this.m_BackgroundMaterial == (UnityEngine.Object) value)
+            if (backgroundMaterial == value) {
                 return;
-            this.RemoveCommandBuffersIfNeeded();
-            this.m_BackgroundMaterial = value;
-            if (this.backgroundRendererChanged != null)
-                this.backgroundRendererChanged();
-            this.ReapplyCommandBuffersIfNeeded();
+            }
+
+            RemoveCommandBuffersIfNeeded();
+            backgroundMaterial = value;
+            ReapplyCommandBuffersIfNeeded();
         }
     }
 
-    /// <summary>
-    ///   <para>An optional Texture used for AR rendering. If this property is not set then the texture set in XR.ARBackgroundRenderer._backgroundMaterial as "_MainTex" is used.</para>
-    /// </summary>
-    public Texture backgroundTexture {
-        get { return this.m_BackgroundTexture; }
+    public Texture BackgroundTexture {
+        get { return backgroundTexture; }
         set {
-            if ((bool) ((UnityEngine.Object) (this.m_BackgroundTexture = value)))
+            if (backgroundTexture == value) {
                 return;
-            this.RemoveCommandBuffersIfNeeded();
-            this.m_BackgroundTexture = value;
-            if (this.backgroundRendererChanged != null)
-                this.backgroundRendererChanged();
-            this.ReapplyCommandBuffersIfNeeded();
+            }
+
+            RemoveCommandBuffersIfNeeded();
+            backgroundTexture = value;
+            ReapplyCommandBuffersIfNeeded();
         }
     }
 
-    /// <summary>
-    ///   <para>An optional Camera whose background rendering will be overridden by this class. If this property is not set then the main Camera in the scene is used.</para>
-    /// </summary>
-    public Camera camera {
-        get {
-            return !((UnityEngine.Object) this.m_Camera != (UnityEngine.Object) null)
-                ? Camera.main
-                : this.m_Camera;
-        }
+    public Camera Camera {
+        get { return camera != null ? camera : Camera.main; }
         set {
-            if ((UnityEngine.Object) this.m_Camera == (UnityEngine.Object) value)
+            if (camera == value) {
                 return;
-            this.RemoveCommandBuffersIfNeeded();
-            this.m_Camera = value;
-            if (this.backgroundRendererChanged != null)
-                this.backgroundRendererChanged();
-            this.ReapplyCommandBuffersIfNeeded();
+            }
+
+            RemoveCommandBuffersIfNeeded();
+            camera = value;
+            ReapplyCommandBuffersIfNeeded();
         }
     }
 
-    /// <summary>
-    ///   <para>When set to XR.ARRenderMode.StandardBackground (default) the camera is not overridden to display the background image. Setting this property to XR.ARRenderMode.MaterialAsBackground will render the texture specified by XR.ARBackgroundRenderer._backgroundMaterial and or XR.ARBackgroundRenderer._backgroundTexture as the background.</para>
-    /// </summary>
-    public ARRenderMode mode {
-        get { return this.m_RenderMode; }
+    public ARRenderMode Mode {
+        get { return renderMode; }
         set {
-            if (value == this.m_RenderMode)
+            if (value == renderMode) {
                 return;
-            this.m_RenderMode = value;
-            switch (this.m_RenderMode) {
+            }
+
+            renderMode = value;
+            switch (renderMode) {
                 case ARRenderMode.StandardBackground:
-                    this.DisableARBackgroundRendering();
+                    DisableBackgroundRendering();
                     break;
                 case ARRenderMode.MaterialAsBackground:
-                    this.EnableARBackgroundRendering();
+                    EnableBackgroundRendering();
                     break;
                 default:
                     throw new Exception("Unhandled render mode.");
             }
-
-            if (this.backgroundRendererChanged == null)
-                return;
-            this.backgroundRendererChanged();
         }
     }
 
@@ -92,66 +72,61 @@ public class SeeThroughRenderer {
 
     #region Private fields
 
-    Camera m_Camera = (Camera) null;
-    Material m_BackgroundMaterial = (Material) null;
-    Texture m_BackgroundTexture = (Texture) null;
-    ARRenderMode m_RenderMode = ARRenderMode.StandardBackground;
-    CommandBuffer m_CommandBuffer = (CommandBuffer) null;
-    CameraClearFlags m_CameraClearFlags = CameraClearFlags.Skybox;
+    Camera camera;
+    Material backgroundMaterial;
+    Texture backgroundTexture;
+    ARRenderMode renderMode = ARRenderMode.StandardBackground;
+    CommandBuffer commandBuffer;
+    CameraClearFlags savedCameraClearFlags = CameraClearFlags.Skybox;
 
     #endregion
 
     #region Rendering
 
-    protected bool EnableARBackgroundRendering() {
-        if ((UnityEngine.Object) this.m_BackgroundMaterial == (UnityEngine.Object) null)
-            return false;
-        Camera camera = !((UnityEngine.Object) this.m_Camera != (UnityEngine.Object) null)
-            ? Camera.main
-            : this.m_Camera;
-        if ((UnityEngine.Object) camera == (UnityEngine.Object) null)
-            return false;
-        this.m_CameraClearFlags = camera.clearFlags;
-        camera.clearFlags = CameraClearFlags.Depth;
-        this.m_CommandBuffer = new CommandBuffer();
-        Texture source = this.m_BackgroundTexture;
-        if ((UnityEngine.Object) source == (UnityEngine.Object) null &&
-            this.m_BackgroundMaterial.HasProperty("_MainTex"))
-            source = this.m_BackgroundMaterial.GetTexture("_MainTex");
-        this.m_CommandBuffer.Blit(
-            source, (RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget,
-            this.m_BackgroundMaterial);
-        camera.AddCommandBuffer(CameraEvent.BeforeForwardOpaque, this.m_CommandBuffer);
-        camera.AddCommandBuffer(CameraEvent.BeforeGBuffer, this.m_CommandBuffer);
-        return true;
-    }
-
-    /// <summary>
-    ///   <para>Disables AR background rendering. This method is called internally but can be overridden by users who wish to subclass XR.ARBackgroundRenderer to customize handling of AR background rendering.</para>
-    /// </summary>
-    protected void DisableARBackgroundRendering() {
-        if (this.m_CommandBuffer == null)
+    void EnableBackgroundRendering() {
+        if (backgroundMaterial == null) {
             return;
-        Camera camera = this.m_Camera ?? Camera.main;
-        if ((UnityEngine.Object) camera == (UnityEngine.Object) null)
+        }
+
+        savedCameraClearFlags = Camera.clearFlags;
+        Camera.clearFlags = CameraClearFlags.Depth;
+
+        commandBuffer = new CommandBuffer();
+
+        var source = backgroundTexture;
+        if (source == null && backgroundMaterial.HasProperty("_MainTex")) {
+            source = backgroundMaterial.GetTexture("_MainTex");
+        }
+
+        commandBuffer.Blit(source, BuiltinRenderTextureType.CameraTarget, backgroundMaterial);
+        Camera.AddCommandBuffer(CameraEvent.BeforeForwardOpaque, commandBuffer);
+        Camera.AddCommandBuffer(CameraEvent.BeforeGBuffer, commandBuffer);
+    }
+
+    void DisableBackgroundRendering() {
+        if (commandBuffer == null) {
             return;
-        camera.clearFlags = this.m_CameraClearFlags;
-        camera.RemoveCommandBuffer(CameraEvent.BeforeForwardOpaque, this.m_CommandBuffer);
-        camera.RemoveCommandBuffer(CameraEvent.BeforeGBuffer, this.m_CommandBuffer);
+        }
+
+        Camera.clearFlags = savedCameraClearFlags;
+        Camera.RemoveCommandBuffer(CameraEvent.BeforeForwardOpaque, commandBuffer);
+        Camera.RemoveCommandBuffer(CameraEvent.BeforeGBuffer, commandBuffer);
     }
 
-    private bool ReapplyCommandBuffersIfNeeded() {
-        if (this.m_RenderMode != ARRenderMode.MaterialAsBackground)
-            return false;
-        this.EnableARBackgroundRendering();
-        return true;
+    void ReapplyCommandBuffersIfNeeded() {
+        if (renderMode != ARRenderMode.MaterialAsBackground) {
+            return;
+        }
+
+        EnableBackgroundRendering();
     }
 
-    private bool RemoveCommandBuffersIfNeeded() {
-        if (this.m_RenderMode != ARRenderMode.MaterialAsBackground)
-            return false;
-        this.DisableARBackgroundRendering();
-        return true;
+    void RemoveCommandBuffersIfNeeded() {
+        if (renderMode != ARRenderMode.MaterialAsBackground) {
+            return;
+        }
+
+        DisableBackgroundRendering();
     }
 
     #endregion
