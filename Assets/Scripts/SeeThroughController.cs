@@ -36,7 +36,7 @@ public sealed class SeeThroughController : MonoBehaviour {
         }
     }
 
-    public ARBackgroundRenderer Renderer { get; private set; }
+    public SeeThroughRenderer Renderer { get; private set; }
 
     #endregion
 
@@ -48,7 +48,6 @@ public sealed class SeeThroughController : MonoBehaviour {
 
 //    bool shaderRatioConfigured;
 //    WebCamTexture webCamTexture;
-    RenderTexture renderTexture;
 
     #endregion
 
@@ -73,9 +72,6 @@ public sealed class SeeThroughController : MonoBehaviour {
 //            Debug.LogWarning("No back-facing camera found, using first available.");
 //            webCamTexture = new WebCamTexture();
 //        }
-
-        renderTexture = new RenderTexture(Screen.width, Screen.height, 1);
-        currentCamera.targetTexture = renderTexture;
 
         Material.SetFloat("_FOV", fov);
         Material.SetFloat("_Disparity", disparity);
@@ -112,7 +108,7 @@ public sealed class SeeThroughController : MonoBehaviour {
     void StartRenderer() {
         Debug.Log("Starting ARBackgroundRenderer");
 
-        Renderer = new ARBackgroundRenderer {
+        Renderer = new SeeThroughRenderer {
             mode = ARRenderMode.MaterialAsBackground,
             camera = currentCamera
         };
