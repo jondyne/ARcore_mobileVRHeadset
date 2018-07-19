@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.XR;
 using UnityEngine.XR.ARFoundation;
 
@@ -7,7 +6,16 @@ public sealed class SeeThroughController : MonoBehaviour {
     #region Editor public fields
 
     [SerializeField]
-    Material material;
+    Camera seeThroughCamera;
+
+    [SerializeField]
+    Camera renderingCamera;
+
+    [SerializeField]
+    Material backgroundMaterial;
+
+    [SerializeField]
+    Material arMaterial;
 
     [SerializeField]
     float fov = 1.6f;
@@ -19,74 +27,66 @@ public sealed class SeeThroughController : MonoBehaviour {
 
     #region Public properties
 
-    public Material Material {
-        get { return material; }
+    public Material BackgroundMaterial {
+        get { return backgroundMaterial; }
         set {
-            material = value;
+            backgroundMaterial = value;
 
-            Renderer.Mode = ARRenderMode.MaterialAsBackground;
-            Renderer.BackgroundMaterial = material;
+            seeThroughRenderer.Mode = ARRenderMode.MaterialAsBackground;
+            seeThroughRenderer.BackgroundMaterial = backgroundMaterial;
 
             if (ARSubsystemManager.cameraSubsystem != null) {
-                ARSubsystemManager.cameraSubsystem.Material = material;
+                ARSubsystemManager.cameraSubsystem.Material = backgroundMaterial;
             }
         }
     }
-
-    public SeeThroughRenderer Renderer { get; private set; }
 
     #endregion
 
     #region Private fields
 
-    bool cameraSetupThrewException;
-    Camera currentCamera;
+    SeeThroughRenderer seeThroughRenderer;
+    RenderTexture arTexture;
 
     #endregion
 
     #region Unity methods
 
     void Start() {
-        currentCamera = GetComponent<Camera>();
+        seeThroughCamera = GetComponent<Camera>();
 
-        Material.SetFloat("_FOV", fov);
-        Material.SetFloat("_Disparity", disparity);
+        backgroundMaterial.SetFloat("_FOV", fov);
+        backgroundMaterial.SetFloat("_Disparity", disparity);
 
 //        var alpha = (webCamTexture.height / (float) Screen.height) *
 //                    ((Screen.width * 0.5f) / webCamTexture.width);
         // TODO: Understand _Alpha calculation ↑ better, 0.5 is needed but on S7 it's 0.66
-        Material.SetFloat("_Alpha", 0.5f);
+        backgroundMaterial.SetFloat("_Alpha", 0.5f);
 
-        StartRenderer();
+        arTexture = new RenderTexture(Screen.width, Screen.height, 32);
+        renderingCamera.targetTexture = arTexture;
+
+        seeThroughRenderer =
+            new SeeThroughRenderer(seeThroughCamera, arTexture, backgroundMaterial, arMaterial);
+
+        var cameraSubsystem = ARSubsystemManager.cameraSubsystem;
+        if (cameraSubsystem != null) {
+            cameraSubsystem.Camera = seeThroughCamera;
+            cameraSubsystem.Material = BackgroundMaterial;
+        }
+
+        ARSubsystemManager.cameraFrameReceived += OnCameraFrameReceived;
     }
 
     #endregion
 
     #region Camera handling
 
-    void StartRenderer() {
-        Debug.Log("Starting ARBackgroundRenderer");
-
-        Renderer = new SeeThroughRenderer {
-            Mode = ARRenderMode.MaterialAsBackground,
-            Camera = currentCamera,
-            BackgroundMaterial = Material
-        };
-
-        var cameraSubsystem = ARSubsystemManager.cameraSubsystem;
-        if (cameraSubsystem != null) {
-            cameraSubsystem.Camera = currentCamera;
-            cameraSubsystem.Material = Material;
-        }
-
-        ARSubsystemManager.cameraFrameReceived += OnCameraFrameReceived;
-    }
-
     void SetupCameraIfNecessary() {
-        Renderer.Mode = ARRenderMode.MaterialAsBackground;
+        seeThroughRenderer.Mode = ARRenderMode.MaterialAsBackground;
 
-        if (Renderer.BackgroundMaterial != Material) {
-            Material = Material;
+        if (seeThroughRenderer.BackgroundMaterial != BackgroundMaterial) {
+            BackgroundMaterial = BackgroundMaterial;
         }
     }
 

@@ -35,14 +35,14 @@ public class SeeThroughRenderer {
     }
 
     public Camera Camera {
-        get { return camera != null ? camera : Camera.main; }
+        get { return seeThroughCamera != null ? seeThroughCamera : Camera.main; }
         set {
-            if (camera == value) {
+            if (seeThroughCamera == value) {
                 return;
             }
 
             RemoveCommandBuffersIfNeeded();
-            camera = value;
+            seeThroughCamera = value;
             ReapplyCommandBuffersIfNeeded();
         }
     }
@@ -72,12 +72,28 @@ public class SeeThroughRenderer {
 
     #region Private fields
 
-    Camera camera;
-    Material backgroundMaterial;
+    Camera seeThroughCamera;
     Texture backgroundTexture;
+    Material backgroundMaterial;
+    Texture arTexture;
+    Material arMaterial;
     ARRenderMode renderMode = ARRenderMode.StandardBackground;
     CommandBuffer commandBuffer;
     CameraClearFlags savedCameraClearFlags = CameraClearFlags.Skybox;
+
+    #endregion
+
+    #region Initialization
+
+    public SeeThroughRenderer(Camera seeThroughCamera, RenderTexture arTexture,
+                              Material backgroundMaterial, Material arMaterial) {
+        this.seeThroughCamera = seeThroughCamera;
+        this.arTexture = arTexture;
+        this.backgroundMaterial = backgroundMaterial;
+        renderMode = ARRenderMode.MaterialAsBackground;
+
+        EnableBackgroundRendering();
+    }
 
     #endregion
 
