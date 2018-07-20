@@ -79,7 +79,7 @@ public sealed class SeeThroughController : MonoBehaviour {
         GUI.Label(new Rect(boundary, boundary, 400, labelHeight), "AR FOV");
         renderingCamera.fieldOfView = GUI.HorizontalSlider(
             new Rect(boundary, boundary + labelHeight, 200, labelHeight),
-            renderingCamera.fieldOfView, 20.0f, 120f);
+            renderingCamera.fieldOfView, 30f, 50f);
 
         GUI.Label(new Rect(Screen.width - boundary - 200, boundary, 200, labelHeight), "FOV");
         fov = GUI.HorizontalSlider(
