@@ -8,8 +8,8 @@ public sealed class SeeThroughController : MonoBehaviour {
     [SerializeField]
     Camera seeThroughCamera;
 
-//    [SerializeField]
-//    Camera renderingCamera;
+    [SerializeField]
+    Camera renderingCamera;
 
     [SerializeField]
     Material backgroundMaterial;
@@ -52,8 +52,6 @@ public sealed class SeeThroughController : MonoBehaviour {
     #region Unity methods
 
     void Start() {
-        seeThroughCamera = GetComponent<Camera>();
-
         barrelDistortionMaterial.SetFloat("_FOV", fov);
         barrelDistortionMaterial.SetFloat("_Disparity", disparity);
 
@@ -74,14 +72,19 @@ public sealed class SeeThroughController : MonoBehaviour {
     }
 
     void OnGUI() {
-        const int labelHeight = 40;
+        const int labelHeight = 60;
         const int boundary = 20;
         GUI.skin.label.fontSize = GUI.skin.box.fontSize = GUI.skin.button.fontSize = 40;
+
+        GUI.Label(new Rect(boundary, boundary, 400, labelHeight), "AR FOV");
+        renderingCamera.fieldOfView = GUI.HorizontalSlider(
+            new Rect(boundary, boundary + labelHeight, 200, labelHeight),
+            renderingCamera.fieldOfView, 20.0f, 120f);
 
         GUI.Label(new Rect(Screen.width - boundary - 200, boundary, 200, labelHeight), "FOV");
         fov = GUI.HorizontalSlider(
             new Rect(Screen.width - boundary - 200, boundary + labelHeight, 200, labelHeight), fov,
-            1.0F, 2.0F);
+            1.0f, 2.0f);
         barrelDistortionMaterial.SetFloat("_FOV", fov);
 
         GUI.Label(
@@ -90,7 +93,7 @@ public sealed class SeeThroughController : MonoBehaviour {
         disparity =
             GUI.HorizontalSlider(
                 new Rect(Screen.width - boundary - 200, Screen.height - labelHeight - boundary, 200,
-                         labelHeight), disparity, 0.0F, 0.3F);
+                         labelHeight), disparity, 0.0f, 0.3f);
         barrelDistortionMaterial.SetFloat("_Disparity", disparity);
     }
 
