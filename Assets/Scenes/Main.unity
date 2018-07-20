@@ -418,9 +418,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seeThroughCamera: {fileID: 1914245112}
-  renderingCamera: {fileID: 2069872582}
-  backgroundMaterial: {fileID: 2100000, guid: c66c7493ad2124392a25c78e7e12effe, type: 2}
-  arMaterial: {fileID: 0}
+  backgroundMaterial: {fileID: 2100000, guid: 1495c3ae84f8b4298bda7a8707e4225e, type: 2}
+  barrelDistortionMaterial: {fileID: 2100000, guid: dce74f4b91e054ebf8cf16bd696c59df,
+    type: 2}
   fov: 1.6
   disparity: 0
 --- !u!114 &1914245114
@@ -464,6 +464,7 @@ GameObject:
   - component: {fileID: 2069872580}
   - component: {fileID: 2069872582}
   - component: {fileID: 2069872581}
+  - component: {fileID: 2069872583}
   m_Layer: 0
   m_Name: Rendering Camera
   m_TagString: Untagged
@@ -499,7 +500,7 @@ Camera:
   m_GameObject: {fileID: 2069872579}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
+  m_ClearFlags: 3
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
   m_projectionMatrixMode: 1
   m_SensorSize: {x: 36, y: 24}
@@ -516,7 +517,7 @@ Camera:
   field of view: 60
   orthographic: 0
   orthographic size: 5
-  m_Depth: 0
+  m_Depth: 1
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -531,3 +532,15 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!114 &2069872583
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2069872579}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad8dd05f9505144fc94843536906015b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  distortionMaterial: {fileID: 2100000, guid: dce74f4b91e054ebf8cf16bd696c59df, type: 2}

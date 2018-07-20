@@ -1,4 +1,4 @@
-﻿Shader "Yaturu/VirtualAR"
+﻿Shader "Yaturu/Barrel Distortion"
 {
 	Properties{
 		_MainTex("", 2D) = "white" {}

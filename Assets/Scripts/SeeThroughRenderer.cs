@@ -75,8 +75,6 @@ public class SeeThroughRenderer {
     Camera seeThroughCamera;
     Texture backgroundTexture;
     Material backgroundMaterial;
-    Texture arTexture;
-    Material arMaterial;
     ARRenderMode renderMode = ARRenderMode.StandardBackground;
     CommandBuffer commandBuffer;
     CameraClearFlags savedCameraClearFlags = CameraClearFlags.Skybox;
@@ -85,10 +83,8 @@ public class SeeThroughRenderer {
 
     #region Initialization
 
-    public SeeThroughRenderer(Camera seeThroughCamera, RenderTexture arTexture,
-                              Material backgroundMaterial, Material arMaterial) {
+    public SeeThroughRenderer(Camera seeThroughCamera, Material backgroundMaterial) {
         this.seeThroughCamera = seeThroughCamera;
-        this.arTexture = arTexture;
         this.backgroundMaterial = backgroundMaterial;
         renderMode = ARRenderMode.MaterialAsBackground;
 
@@ -107,13 +103,12 @@ public class SeeThroughRenderer {
         savedCameraClearFlags = Camera.clearFlags;
         Camera.clearFlags = CameraClearFlags.Depth;
 
-        commandBuffer = new CommandBuffer();
-
         var source = backgroundTexture;
         if (source == null && backgroundMaterial.HasProperty("_MainTex")) {
             source = backgroundMaterial.GetTexture("_MainTex");
         }
 
+        commandBuffer = new CommandBuffer();
         commandBuffer.Blit(source, BuiltinRenderTextureType.CameraTarget, backgroundMaterial);
         Camera.AddCommandBuffer(CameraEvent.BeforeForwardOpaque, commandBuffer);
         Camera.AddCommandBuffer(CameraEvent.BeforeGBuffer, commandBuffer);

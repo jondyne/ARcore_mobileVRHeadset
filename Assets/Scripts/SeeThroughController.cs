@@ -8,14 +8,14 @@ public sealed class SeeThroughController : MonoBehaviour {
     [SerializeField]
     Camera seeThroughCamera;
 
-    [SerializeField]
-    Camera renderingCamera;
+//    [SerializeField]
+//    Camera renderingCamera;
 
     [SerializeField]
     Material backgroundMaterial;
 
     [SerializeField]
-    Material arMaterial;
+    Material barrelDistortionMaterial;
 
     [SerializeField]
     float fov = 1.6f;
@@ -46,7 +46,6 @@ public sealed class SeeThroughController : MonoBehaviour {
     #region Private fields
 
     SeeThroughRenderer seeThroughRenderer;
-    RenderTexture arTexture;
 
     #endregion
 
@@ -55,19 +54,15 @@ public sealed class SeeThroughController : MonoBehaviour {
     void Start() {
         seeThroughCamera = GetComponent<Camera>();
 
-        backgroundMaterial.SetFloat("_FOV", fov);
-        backgroundMaterial.SetFloat("_Disparity", disparity);
+        barrelDistortionMaterial.SetFloat("_FOV", fov);
+        barrelDistortionMaterial.SetFloat("_Disparity", disparity);
 
 //        var alpha = (webCamTexture.height / (float) Screen.height) *
 //                    ((Screen.width * 0.5f) / webCamTexture.width);
         // TODO: Understand _Alpha calculation ↑ better, 0.5 is needed but on S7 it's 0.66
-        backgroundMaterial.SetFloat("_Alpha", 0.5f);
+        barrelDistortionMaterial.SetFloat("_Alpha", 0.5f);
 
-        arTexture = new RenderTexture(Screen.width, Screen.height, 32);
-        renderingCamera.targetTexture = arTexture;
-
-        seeThroughRenderer =
-            new SeeThroughRenderer(seeThroughCamera, arTexture, backgroundMaterial, arMaterial);
+        seeThroughRenderer = new SeeThroughRenderer(seeThroughCamera, backgroundMaterial);
 
         var cameraSubsystem = ARSubsystemManager.cameraSubsystem;
         if (cameraSubsystem != null) {
@@ -87,8 +82,7 @@ public sealed class SeeThroughController : MonoBehaviour {
         fov = GUI.HorizontalSlider(
             new Rect(Screen.width - boundary - 200, boundary + labelHeight, 200, labelHeight), fov,
             1.0F, 2.0F);
-        backgroundMaterial.SetFloat("_FOV", fov);
-//        arMaterial.SetFloat("_FOV", fov);
+        barrelDistortionMaterial.SetFloat("_FOV", fov);
 
         GUI.Label(
             new Rect(Screen.width - boundary - 200, Screen.height - labelHeight * 2 - boundary, 200,
@@ -97,8 +91,7 @@ public sealed class SeeThroughController : MonoBehaviour {
             GUI.HorizontalSlider(
                 new Rect(Screen.width - boundary - 200, Screen.height - labelHeight - boundary, 200,
                          labelHeight), disparity, 0.0F, 0.3F);
-        backgroundMaterial.SetFloat("_Disparity", disparity);
-//        arMaterial.SetFloat("_Disparity", disparity);
+        barrelDistortionMaterial.SetFloat("_Disparity", disparity);
     }
 
     #endregion

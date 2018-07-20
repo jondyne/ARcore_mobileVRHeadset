@@ -6,11 +6,11 @@ Material:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: Builtin ARCore Background
-  m_Shader: {fileID: 4800000, guid: 3febd4e0c09638d46a06b4663ab5adc3, type: 3}
+  m_Name: ARCore Passthrough
+  m_Shader: {fileID: 4800000, guid: 235708b43716481080608079d10428ca, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
-  m_EnableInstancingVariants: 1
+  m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
   stringTagMap: {}

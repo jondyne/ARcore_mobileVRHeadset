@@ -2,11 +2,11 @@
 {
 	Properties
 	{
-		_MainTex("Texture", 2D) = "white" {}
+		_MainTex ("Texture", 2D) = "white" {}
 
 		[HideInInspector] _FOV ("FOV", Range(1, 2)) = 1.6
 		[HideInInspector] _Disparity ("Disparity", Range(0, 0.3)) = 0.0
-		[HideInInspector] _Alpha ("Alpha", Range(0, 2.0)) = 1.0
+		[HideInInspector] _Alpha ("Alpha", Range(0, 2.0)) = 0.5
 	}
 
 	// For GLES3
@@ -68,7 +68,7 @@
 
 				// black color for out-of-range pixels
 				if (uv2.x >= 1.0 || uv2.y >= 1.0 || uv2.x <= 0.0 || uv2.y <= 0.0) {
-					gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+					gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
 				} else {
 					offset = 0.5 - _Alpha * 0.5 + _Disparity * 0.5 - _Disparity * step(inputUV.x, 0.5);
 					// uv3 is the remap of image texture
