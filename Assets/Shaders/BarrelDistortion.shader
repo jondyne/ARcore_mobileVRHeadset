@@ -3,12 +3,9 @@
 	Properties{
 		_MainTex("", 2D) = "white" {}
 
-		[HideInInspector] _FOV("FOV", Range(1, 2)) = 1.6
+		[HideInInspector] _FOV("FOV", Range(1, 2)) = 1.0
 		[HideInInspector] _Disparity("Disparity", Range(0, 0.3)) = 0.1
 		[HideInInspector] _Alpha("Alpha", Range(0, 2.0)) = 1.0
-
-		// 0 = don't mirror, 1 = mirror
-		_Mirror ("Mirror", Float) = 0.0
 	}
 
 	SubShader{
@@ -43,8 +40,6 @@
 			// larger disparity cause closer stereovision
 			float _Disparity;
 
-			float _Mirror;
-
 			// This is being set from ARBackgroundRenderer
 			uniform float4x4 _UnityDisplayTransform;
 
@@ -55,12 +50,9 @@
 				float t1, t2;
 				float offset;
 
-				float2 inputUV = i.uv;
-				inputUV.y = step(_Mirror, 0.5) * inputUV.y + step(0.5, _Mirror) * (1 - inputUV.y);
-
 				// uv1 is the remap of left and right screen to a full screen
-				uv1 = inputUV - 0.5;
-				uv1.x = uv1.x * 2 - 0.5 + sign(inputUV.x < 0.5);
+				uv1 = i.uv - 0.5;
+				uv1.x = uv1.x * 2 - 0.5 + step(i.uv.x, 0.5);
 
 				t1 = sqrt(1.0 - uv1.x * uv1.x - uv1.y * uv1.y);
 				t2 = 1.0 / (t1 * tan(_FOV * 0.5));
@@ -69,10 +61,10 @@
 				uv2 = uv1 * t2 + 0.5;
 
 				// black color for out-of-range pixels
-				if (uv2.x >= 1 || uv2.y >= 1 || uv2.x <= 0 || uv2.y <= 0) {
+				if (uv2.x >= 1.5 || uv2.y >= 1.0 || uv2.x <= -0.5 || uv2.y <= 0.0) {
 					return fixed4(0, 0, 0, 1);
 				} else {
-					offset = 0.5 - _Alpha * 0.5 + _Disparity * 0.5 - _Disparity * sign(inputUV.x < 0.5);
+					offset = 0.5 - _Alpha * 0.5 + _Disparity * 0.5 - _Disparity * step(i.uv.x, 0.5);
 					// uv3 is the remap of image texture
 					uv3 = uv2;
 					uv3.x = uv2.x * _Alpha + offset;

@@ -424,7 +424,7 @@ MonoBehaviour:
     type: 2}
   debugBackgroundMaterial: {fileID: 2100000, guid: 2decce40e16d54b9084c7e8d6f94cffb,
     type: 2}
-  fov: 1.6
+  fov: 1
   disparity: 0
 --- !u!114 &1914245114
 MonoBehaviour:

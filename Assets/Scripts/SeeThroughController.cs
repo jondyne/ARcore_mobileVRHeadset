@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.XR;
 using UnityEngine.XR.ARFoundation;
 
@@ -23,7 +24,8 @@ public sealed class SeeThroughController : MonoBehaviour {
 #endif
 
     [SerializeField]
-    float fov = 1.6f;
+    [Range(1f, 2f)]
+    float fov = 1f;
 
     [SerializeField]
     float disparity;
@@ -52,6 +54,10 @@ public sealed class SeeThroughController : MonoBehaviour {
 
     SeeThroughRenderer seeThroughRenderer;
 
+#if UNITY_EDITOR
+    WebCamTexture webCamTexture;
+#endif
+
     #endregion
 
     #region Unity methods
@@ -66,8 +72,9 @@ public sealed class SeeThroughController : MonoBehaviour {
         barrelDistortionMaterial.SetFloat("_Alpha", 0.5f);
 
 #if UNITY_EDITOR
-        var webCamTexture = new WebCamTexture();
+        webCamTexture = new WebCamTexture();
         webCamTexture.Play();
+
         debugBackgroundMaterial.SetTexture("_MainTex", webCamTexture);
 
         seeThroughRenderer = new SeeThroughRenderer(seeThroughCamera, debugBackgroundMaterial);
