@@ -18,12 +18,6 @@ public class BarrelDistortion : MonoBehaviour {
 
     #region Unity methods
 
-    void Start() {
-        distortionMaterial.SetFloat("_FOV", 1.6f);
-        distortionMaterial.SetFloat("_Disparity", 0f);
-        distortionMaterial.SetFloat("_Alpha", 0.5f);
-    }
-
     void OnRenderImage(RenderTexture src, RenderTexture dest) {
         Graphics.Blit(src, null, distortionMaterial);
     }

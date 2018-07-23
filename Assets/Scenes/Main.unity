@@ -422,6 +422,8 @@ MonoBehaviour:
   backgroundMaterial: {fileID: 2100000, guid: 1495c3ae84f8b4298bda7a8707e4225e, type: 2}
   barrelDistortionMaterial: {fileID: 2100000, guid: dce74f4b91e054ebf8cf16bd696c59df,
     type: 2}
+  debugBackgroundMaterial: {fileID: 2100000, guid: 2decce40e16d54b9084c7e8d6f94cffb,
+    type: 2}
   fov: 1.6
   disparity: 0
 --- !u!114 &1914245114

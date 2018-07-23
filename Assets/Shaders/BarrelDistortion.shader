@@ -71,8 +71,7 @@
 				// black color for out-of-range pixels
 				if (uv2.x >= 1 || uv2.y >= 1 || uv2.x <= 0 || uv2.y <= 0) {
 					return fixed4(0, 0, 0, 1);
-				}
-				else {
+				} else {
 					offset = 0.5 - _Alpha * 0.5 + _Disparity * 0.5 - _Disparity * sign(inputUV.x < 0.5);
 					// uv3 is the remap of image texture
 					uv3 = uv2;

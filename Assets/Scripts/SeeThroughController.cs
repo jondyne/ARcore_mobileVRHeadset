@@ -17,6 +17,11 @@ public sealed class SeeThroughController : MonoBehaviour {
     [SerializeField]
     Material barrelDistortionMaterial;
 
+#if UNITY_EDITOR
+    [SerializeField]
+    Material debugBackgroundMaterial;
+#endif
+
     [SerializeField]
     float fov = 1.6f;
 
@@ -60,7 +65,15 @@ public sealed class SeeThroughController : MonoBehaviour {
         // TODO: Understand _Alpha calculation ↑ better, 0.5 is needed but on S7 it's 0.66
         barrelDistortionMaterial.SetFloat("_Alpha", 0.5f);
 
+#if UNITY_EDITOR
+        var webCamTexture = new WebCamTexture();
+        webCamTexture.Play();
+        debugBackgroundMaterial.SetTexture("_MainTex", webCamTexture);
+
+        seeThroughRenderer = new SeeThroughRenderer(seeThroughCamera, debugBackgroundMaterial);
+#else
         seeThroughRenderer = new SeeThroughRenderer(seeThroughCamera, backgroundMaterial);
+#endif
 
         var cameraSubsystem = ARSubsystemManager.cameraSubsystem;
         if (cameraSubsystem != null) {
