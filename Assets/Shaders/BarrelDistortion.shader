@@ -5,7 +5,7 @@
 
 		[HideInInspector] _FOV("FOV", Range(1, 2)) = 1.0
 		[HideInInspector] _Disparity("Disparity", Range(0, 0.3)) = 0.1
-		[HideInInspector] _Alpha("Alpha", Range(0, 2.0)) = 1.0
+		[HideInInspector] _Alpha("Alpha", Float) = 1.0
 	}
 
 	SubShader{

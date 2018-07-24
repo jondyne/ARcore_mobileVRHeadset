@@ -24,7 +24,7 @@ public sealed class SeeThroughController : MonoBehaviour {
 #endif
 
     [SerializeField]
-    [Range(1f, 2f)]
+    [Range(0.5f, 1.5f)]
     float fov = 1f;
 
     [SerializeField]
@@ -96,15 +96,19 @@ public sealed class SeeThroughController : MonoBehaviour {
         const int boundary = 20;
         GUI.skin.label.fontSize = GUI.skin.box.fontSize = GUI.skin.button.fontSize = 40;
 
-        GUI.Label(new Rect(boundary, boundary, 400, labelHeight), "AR FOV");
+        GUI.skin.label.alignment = TextAnchor.MiddleLeft;
+        GUI.Label(new Rect(boundary, boundary, 400, labelHeight),
+                  $"AR FOV: {renderingCamera.fieldOfView}");
         renderingCamera.fieldOfView = GUI.HorizontalSlider(
             new Rect(boundary, boundary + labelHeight, 200, labelHeight),
             renderingCamera.fieldOfView, 30f, 50f);
 
-        GUI.Label(new Rect(Screen.width - boundary - 200, boundary, 200, labelHeight), "FOV");
+        GUI.skin.label.alignment = TextAnchor.MiddleRight;
+        GUI.Label(new Rect(Screen.width - boundary - 300, boundary, 300, labelHeight),
+                  $"FOV: {fov:F3}");
         fov = GUI.HorizontalSlider(
             new Rect(Screen.width - boundary - 200, boundary + labelHeight, 200, labelHeight), fov,
-            1.0f, 2.0f);
+            0.5f, 1.5f);
         barrelDistortionMaterial.SetFloat("_FOV", fov);
 
         GUI.Label(
