@@ -93,23 +93,57 @@ public sealed class SeeThroughController : MonoBehaviour {
 
     void OnGUI() {
         const int labelHeight = 60;
+        const int sliderWidth = 200;
+        const int buttonSize = 80;
         const int boundary = 20;
+        const float arFovIncrement = 0.01f;
+        const float fovIncrement = 0.001f;
+
         GUI.skin.label.fontSize = GUI.skin.box.fontSize = GUI.skin.button.fontSize = 40;
+
+        // AR FOV
 
         GUI.skin.label.alignment = TextAnchor.MiddleLeft;
         GUI.Label(new Rect(boundary, boundary, 400, labelHeight),
-                  $"AR FOV: {renderingCamera.fieldOfView:F3}");
+                  $"AR FOV: {renderingCamera.fieldOfView:F2}");
+
+        if (GUI.Button(new Rect(boundary, boundary + labelHeight, buttonSize, buttonSize), "-")) {
+            renderingCamera.fieldOfView -= arFovIncrement;
+        }
+
         renderingCamera.fieldOfView = GUI.HorizontalSlider(
-            new Rect(boundary, boundary + labelHeight, 200, labelHeight),
+            new Rect(boundary + buttonSize, boundary + labelHeight, sliderWidth, labelHeight),
             renderingCamera.fieldOfView, 35f, 42f);
 
+        if (GUI.Button(
+            new Rect(boundary + buttonSize + sliderWidth, boundary + labelHeight, buttonSize,
+                     buttonSize), "+")) {
+            renderingCamera.fieldOfView += arFovIncrement;
+        }
+
+        // FOV
         GUI.skin.label.alignment = TextAnchor.MiddleRight;
         GUI.Label(new Rect(Screen.width - boundary - 300, boundary, 300, labelHeight),
                   $"FOV: {fov:F3}");
+
+        if (GUI.Button(
+            new Rect(Screen.width - boundary - 2 * buttonSize - sliderWidth, boundary + labelHeight,
+                     buttonSize, buttonSize), "-")) {
+            fov -= fovIncrement;
+        }
+
         fov = GUI.HorizontalSlider(
-            new Rect(Screen.width - boundary - 200, boundary + labelHeight, 200, labelHeight), fov,
-            0.5f, 1.5f);
+            new Rect(Screen.width - boundary - buttonSize - sliderWidth, boundary + labelHeight,
+                     sliderWidth, labelHeight), fov, 0.5f, 1.5f);
         barrelDistortionMaterial.SetFloat("_FOV", fov);
+
+        if (GUI.Button(
+            new Rect(Screen.width - boundary - buttonSize, boundary + labelHeight, buttonSize,
+                     buttonSize), "+")) {
+            fov += fovIncrement;
+        }
+
+        // Disparity
 
         GUI.Label(
             new Rect(Screen.width - boundary - 200, Screen.height - labelHeight * 2 - boundary, 200,
