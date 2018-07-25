@@ -1,9 +1,8 @@
 ﻿using System.Collections;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.XR.ARFoundation;
 
-public class StartExperienceController : MonoBehaviour, IPointerClickHandler {
+public class StartExperienceController : MonoBehaviour{
     #region Editor public fields
 
     [SerializeField]
@@ -15,6 +14,9 @@ public class StartExperienceController : MonoBehaviour, IPointerClickHandler {
     [SerializeField]
     float hideAfterSeconds = 3f;
 
+    [SerializeField]
+    GameObject spawnOnPlane;
+
     #endregion
 
     #region Public properties
@@ -23,6 +25,8 @@ public class StartExperienceController : MonoBehaviour, IPointerClickHandler {
 
     #region Private fields
 
+    bool initialized;
+
     #endregion
 
     #region Unity methods
@@ -30,6 +34,7 @@ public class StartExperienceController : MonoBehaviour, IPointerClickHandler {
     void Start() {
         initializeUi.SetActive(true);
         tapToSpawnUi.SetActive(false);
+//        spawnOnPlane.SetActive(false);
     }
 
     void OnEnable() {
@@ -47,11 +52,14 @@ public class StartExperienceController : MonoBehaviour, IPointerClickHandler {
     void ArSubsystemStateChanged(ARSystemStateChangedEventArgs eventArgs) {
         Debug.Log($"AR system state changed to {eventArgs.state}");
 
-        if (eventArgs.state == ARSystemState.SessionTracking) {
+        if (!initialized && eventArgs.state == ARSystemState.SessionTracking) {
             initializeUi.SetActive(false);
             tapToSpawnUi.SetActive(true);
+//            spawnOnPlane.SetActive(true);
 
-            StartCoroutine(HideSpawnUI());
+            initialized = true;
+
+            StartCoroutine(HideTapToSpawnUI());
         }
     }
 
@@ -59,12 +67,8 @@ public class StartExperienceController : MonoBehaviour, IPointerClickHandler {
 
     #region UI handling
 
-    public void OnPointerClick(PointerEventData eventData) {
-        Debug.Log("Click.");
-    }
-
     // ReSharper disable once InconsistentNaming
-    IEnumerator HideSpawnUI() {
+    IEnumerator HideTapToSpawnUI() {
         yield return new WaitForSeconds(hideAfterSeconds);
 
         tapToSpawnUi.SetActive(false);
