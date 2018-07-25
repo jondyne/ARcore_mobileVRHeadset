@@ -14,9 +14,6 @@ public class StartExperienceController : MonoBehaviour{
     [SerializeField]
     float hideAfterSeconds = 3f;
 
-    [SerializeField]
-    GameObject spawnOnPlane;
-
     #endregion
 
     #region Public properties
@@ -34,7 +31,6 @@ public class StartExperienceController : MonoBehaviour{
     void Start() {
         initializeUi.SetActive(true);
         tapToSpawnUi.SetActive(false);
-//        spawnOnPlane.SetActive(false);
     }
 
     void OnEnable() {
@@ -55,7 +51,6 @@ public class StartExperienceController : MonoBehaviour{
         if (!initialized && eventArgs.state == ARSystemState.SessionTracking) {
             initializeUi.SetActive(false);
             tapToSpawnUi.SetActive(true);
-//            spawnOnPlane.SetActive(true);
 
             initialized = true;
 
