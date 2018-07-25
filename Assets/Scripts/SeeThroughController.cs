@@ -98,10 +98,10 @@ public sealed class SeeThroughController : MonoBehaviour {
 
         GUI.skin.label.alignment = TextAnchor.MiddleLeft;
         GUI.Label(new Rect(boundary, boundary, 400, labelHeight),
-                  $"AR FOV: {renderingCamera.fieldOfView}");
+                  $"AR FOV: {renderingCamera.fieldOfView:F3}");
         renderingCamera.fieldOfView = GUI.HorizontalSlider(
             new Rect(boundary, boundary + labelHeight, 200, labelHeight),
-            renderingCamera.fieldOfView, 30f, 50f);
+            renderingCamera.fieldOfView, 35f, 42f);
 
         GUI.skin.label.alignment = TextAnchor.MiddleRight;
         GUI.Label(new Rect(Screen.width - boundary - 300, boundary, 300, labelHeight),
