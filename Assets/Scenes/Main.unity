@@ -983,11 +983,11 @@ MonoBehaviour:
   mainCamera: {fileID: 2069872582}
   crosshairPrefab: {fileID: 1129228152599568, guid: 818d33371b9c643b4917221f223e3acf,
     type: 2}
-  prefabToSpawn: {fileID: 1026107257645560, guid: f7b8ee8d40109414a91b7253a0fe1568,
+  prefabToSpawn: {fileID: 1190091649889860, guid: 63e9325810cb14b9e8e0590d57d87afb,
     type: 2}
   sessionOrigin: {fileID: 623567135}
-  scaleMinimum: 0.1
-  scaleMaximum: 0.5
+  scaleMinimum: 2
+  scaleMaximum: 2
 --- !u!114 &2046901192
 MonoBehaviour:
   m_ObjectHideFlags: 0

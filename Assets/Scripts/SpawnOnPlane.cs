@@ -71,6 +71,10 @@ public class SpawnOnPlane : MonoBehaviour, IPointerClickHandler {
             var pose = raycastHits[0].pose;
             var spawnedObject = Instantiate(prefabToSpawn, pose.position, pose.rotation);
 
+            var forward = -mainCamera.transform.forward;
+            forward.y = 0f;
+            spawnedObject.transform.forward = forward.normalized;
+
             var randomScale = Random.Range(scaleMinimum, scaleMaximum);
             spawnedObject.transform.localScale = Vector3.one * randomScale;
         }
