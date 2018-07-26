@@ -96,7 +96,7 @@ public sealed class SeeThroughController : MonoBehaviour {
         const int sliderWidth = 200;
         const int buttonSize = 80;
         const int boundary = 20;
-        const float arFovIncrement = 0.01f;
+        const float arFovIncrement = 0.001f;
         const float fovIncrement = 0.001f;
 
         GUI.skin.label.fontSize = GUI.skin.box.fontSize = GUI.skin.button.fontSize = 40;
@@ -105,7 +105,7 @@ public sealed class SeeThroughController : MonoBehaviour {
 
         GUI.skin.label.alignment = TextAnchor.MiddleLeft;
         GUI.Label(new Rect(boundary, boundary, 400, labelHeight),
-                  $"AR FOV: {renderingCamera.fieldOfView:F2}");
+                  $"AR FOV: {renderingCamera.fieldOfView:F3}");
 
         if (GUI.Button(new Rect(boundary, boundary + labelHeight, buttonSize, buttonSize), "-")) {
             renderingCamera.fieldOfView -= arFovIncrement;

@@ -979,7 +979,6 @@ MonoBehaviour:
   initializeUi: {fileID: 1038220129}
   tapToSpawnUi: {fileID: 837386168}
   hideAfterSeconds: 3
-  spawnOnPlane: {fileID: 2046901189}
 --- !u!1 &1914245111
 GameObject:
   m_ObjectHideFlags: 0
@@ -1239,7 +1238,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 38
+  field of view: 38.06
   orthographic: 0
   orthographic size: 5
   m_Depth: 1
