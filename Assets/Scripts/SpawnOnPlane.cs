@@ -14,6 +14,12 @@ public class SpawnOnPlane : MonoBehaviour, IPointerClickHandler {
     GameObject crosshairPrefab;
 
     [SerializeField]
+    Color crosshairInsidePlaneColor = Color.green;
+
+    [SerializeField]
+    Color crosshairOutsidePlaneColor = Color.yellow;
+
+    [SerializeField]
     GameObject prefabToSpawn;
 
     [SerializeField]
@@ -25,6 +31,10 @@ public class SpawnOnPlane : MonoBehaviour, IPointerClickHandler {
     [SerializeField]
     float scaleMaximum = 1f;
 
+    [SerializeField]
+    [Range(0.1f, 1f)]
+    float crosshairLerp = 0.8f;
+
     #endregion
 
     #region Public properties
@@ -34,8 +44,16 @@ public class SpawnOnPlane : MonoBehaviour, IPointerClickHandler {
     #region Private fields
 
     Vector3 screenCenter;
+
     GameObject crosshair;
+    Renderer crosshairRenderer;
+
     readonly List<ARRaycastHit> raycastHits = new List<ARRaycastHit>();
+
+    int shaderColorId;
+
+    Vector3 crosshairPosition;
+    Vector3 crosshairUp;
 
     #endregion
 
@@ -45,20 +63,39 @@ public class SpawnOnPlane : MonoBehaviour, IPointerClickHandler {
         screenCenter = new Vector3(mainCamera.pixelWidth / 2, mainCamera.pixelHeight / 2, 0f);
 
         crosshair = Instantiate(crosshairPrefab);
+        crosshairRenderer = crosshair.GetComponentInChildren<Renderer>();
         crosshair.SetActive(false);
+
+        shaderColorId = Shader.PropertyToID("_Color");
     }
 
     void Update() {
         var ray = mainCamera.ScreenPointToRay(screenCenter);
-        if (sessionOrigin.Raycast(ray, raycastHits, TrackableType.PlaneWithinPolygon)) {
-            var pose = raycastHits[0].pose;
+
+        // Raycasting with only PlaneWithinInfinity always sets hitType to PlaneWithinInfinity, so
+        // we need to potentially do two raycasts in order to color the crosshair properly.
+        if (sessionOrigin.Raycast(ray, raycastHits, TrackableType.PlaneWithinBounds) ||
+            sessionOrigin.Raycast(ray, raycastHits, TrackableType.PlaneWithinInfinity)) {
+            var hit = raycastHits[0];
+            var pose = hit.pose;
 
             crosshair.SetActive(true);
-            crosshair.transform.position = pose.position;
-            crosshair.transform.up = pose.up;
+            crosshairPosition = pose.position;
+            crosshairUp = pose.up;
+
+            if (crosshairRenderer != null) {
+                var color = hit.hitType == TrackableType.PlaneWithinBounds
+                    ? crosshairInsidePlaneColor
+                    : crosshairOutsidePlaneColor;
+                crosshairRenderer.material.SetColor(shaderColorId, color);
+            }
         } else {
             crosshair.SetActive(false);
         }
+
+        crosshair.transform.position =
+            Vector3.Lerp(crosshair.transform.position, crosshairPosition, crosshairLerp);
+        crosshair.transform.up = Vector3.Lerp(crosshair.transform.up, crosshairUp, crosshairLerp);
     }
 
     #endregion
@@ -67,7 +104,7 @@ public class SpawnOnPlane : MonoBehaviour, IPointerClickHandler {
 
     public void OnPointerClick(PointerEventData eventData) {
         var ray = mainCamera.ScreenPointToRay(screenCenter);
-        if (sessionOrigin.Raycast(ray, raycastHits, TrackableType.PlaneWithinPolygon)) {
+        if (sessionOrigin.Raycast(ray, raycastHits, TrackableType.PlaneWithinInfinity)) {
             var pose = raycastHits[0].pose;
             var spawnedObject = Instantiate(prefabToSpawn, pose.position, pose.rotation);
 
