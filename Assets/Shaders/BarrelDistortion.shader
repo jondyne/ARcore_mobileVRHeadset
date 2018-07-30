@@ -36,7 +36,6 @@
 			// Alpha is the ratio of pixel density: width to height
 			float _Alpha;
 
-			// This is being set from ARBackgroundRenderer
 			uniform float4x4 _UnityDisplayTransform;
 
 			// Fragment Shader: Remap the texture coordinates to combine

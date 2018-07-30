@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.XR;
 using UnityEngine.XR.ARFoundation;
 
@@ -15,17 +14,10 @@ public sealed class SeeThroughController : MonoBehaviour {
     [SerializeField]
     Material backgroundMaterial;
 
-    [SerializeField]
-    Material barrelDistortionMaterial;
-
 #if UNITY_EDITOR
     [SerializeField]
     Material debugBackgroundMaterial;
 #endif
-
-    [SerializeField]
-    [Range(0.5f, 1.5f)]
-    float fov = 1f;
 
     #endregion
 
@@ -60,13 +52,6 @@ public sealed class SeeThroughController : MonoBehaviour {
     #region Unity methods
 
     void Start() {
-        barrelDistortionMaterial.SetFloat("_FOV", fov);
-
-//        var alpha = (webCamTexture.height / (float) Screen.height) *
-//                    ((Screen.width * 0.5f) / webCamTexture.width);
-        // TODO: Understand _Alpha calculation ↑ better, 0.5 is needed but on S7 it's 0.66
-        barrelDistortionMaterial.SetFloat("_Alpha", 0.5f);
-
 #if UNITY_EDITOR
         webCamTexture = new WebCamTexture();
         webCamTexture.Play();
@@ -93,13 +78,10 @@ public sealed class SeeThroughController : MonoBehaviour {
         const int buttonSize = 80;
         const int boundary = 20;
         const float arFovIncrement = 0.001f;
-        const float fovIncrement = 0.001f;
 
         GUI.skin.label.fontSize = GUI.skin.box.fontSize = GUI.skin.button.fontSize = 40;
-
-        // AR FOV
-
         GUI.skin.label.alignment = TextAnchor.MiddleLeft;
+
         GUI.Label(new Rect(boundary, boundary, 400, labelHeight),
                   $"AR FOV: {renderingCamera.fieldOfView:F3}");
 
@@ -115,28 +97,6 @@ public sealed class SeeThroughController : MonoBehaviour {
             new Rect(boundary + buttonSize + sliderWidth, boundary + labelHeight, buttonSize,
                      buttonSize), "+")) {
             renderingCamera.fieldOfView += arFovIncrement;
-        }
-
-        // FOV
-        GUI.skin.label.alignment = TextAnchor.MiddleRight;
-        GUI.Label(new Rect(Screen.width - boundary - 300, boundary, 300, labelHeight),
-                  $"FOV: {fov:F3}");
-
-        if (GUI.Button(
-            new Rect(Screen.width - boundary - 2 * buttonSize - sliderWidth, boundary + labelHeight,
-                     buttonSize, buttonSize), "-")) {
-            fov -= fovIncrement;
-        }
-
-        fov = GUI.HorizontalSlider(
-            new Rect(Screen.width - boundary - buttonSize - sliderWidth, boundary + labelHeight,
-                     sliderWidth, labelHeight), fov, 0.5f, 1.5f);
-        barrelDistortionMaterial.SetFloat("_FOV", fov);
-
-        if (GUI.Button(
-            new Rect(Screen.width - boundary - buttonSize, boundary + labelHeight, buttonSize,
-                     buttonSize), "+")) {
-            fov += fovIncrement;
         }
     }
 
