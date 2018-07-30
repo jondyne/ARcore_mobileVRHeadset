@@ -4,7 +4,6 @@
 		_MainTex("", 2D) = "white" {}
 
 		[HideInInspector] _FOV("FOV", Range(1, 2)) = 1.0
-		[HideInInspector] _Disparity("Disparity", Range(0, 0.3)) = 0.1
 		[HideInInspector] _Alpha("Alpha", Float) = 1.0
 	}
 
@@ -36,9 +35,6 @@
 
 			// Alpha is the ratio of pixel density: width to height
 			float _Alpha;
-			// Disparity is the portion to separate
-			// larger disparity cause closer stereovision
-			float _Disparity;
 
 			// This is being set from ARBackgroundRenderer
 			uniform float4x4 _UnityDisplayTransform;
@@ -64,7 +60,7 @@
 				if (uv2.x >= 1.5 || uv2.y >= 1.0 || uv2.x <= -0.5 || uv2.y <= 0.0) {
 					return fixed4(0, 0, 0, 1);
 				} else {
-					offset = 0.5 - _Alpha * 0.5 + _Disparity * 0.5 - _Disparity * step(i.uv.x, 0.5);
+					offset = 0.5 - _Alpha * 0.5;
 					// uv3 is the remap of image texture
 					uv3 = uv2;
 					uv3.x = uv2.x * _Alpha + offset;

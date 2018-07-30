@@ -836,7 +836,7 @@ GameObject:
   - component: {fileID: 1914245114}
   - component: {fileID: 1914245113}
   m_Layer: 0
-  m_Name: AR Camera
+  m_Name: Reality Camera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -990,6 +990,7 @@ MonoBehaviour:
   sessionOrigin: {fileID: 623567135}
   scaleMinimum: 2
   scaleMaximum: 2
+  crosshairLerp: 0.8
 --- !u!114 &2046901192
 MonoBehaviour:
   m_ObjectHideFlags: 0

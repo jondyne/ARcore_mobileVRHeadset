@@ -27,9 +27,6 @@ public sealed class SeeThroughController : MonoBehaviour {
     [Range(0.5f, 1.5f)]
     float fov = 1f;
 
-    [SerializeField]
-    float disparity;
-
     #endregion
 
     #region Public properties
@@ -64,7 +61,6 @@ public sealed class SeeThroughController : MonoBehaviour {
 
     void Start() {
         barrelDistortionMaterial.SetFloat("_FOV", fov);
-        barrelDistortionMaterial.SetFloat("_Disparity", disparity);
 
 //        var alpha = (webCamTexture.height / (float) Screen.height) *
 //                    ((Screen.width * 0.5f) / webCamTexture.width);
@@ -142,17 +138,6 @@ public sealed class SeeThroughController : MonoBehaviour {
                      buttonSize), "+")) {
             fov += fovIncrement;
         }
-
-        // Disparity
-
-        GUI.Label(
-            new Rect(Screen.width - boundary - 200, Screen.height - labelHeight * 2 - boundary, 200,
-                     labelHeight), "Disparity");
-        disparity =
-            GUI.HorizontalSlider(
-                new Rect(Screen.width - boundary - 200, Screen.height - labelHeight - boundary, 200,
-                         labelHeight), disparity, 0.0f, 0.3f);
-        barrelDistortionMaterial.SetFloat("_Disparity", disparity);
     }
 
     #endregion
