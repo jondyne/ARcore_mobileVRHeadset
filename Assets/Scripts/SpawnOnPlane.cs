@@ -31,10 +31,6 @@ public class SpawnOnPlane : MonoBehaviour, IPointerClickHandler {
     [SerializeField]
     float scaleMaximum = 1f;
 
-    [SerializeField]
-    [Range(0.1f, 1f)]
-    float crosshairLerp = 0.8f;
-
     #endregion
 
     #region Public properties
@@ -51,9 +47,6 @@ public class SpawnOnPlane : MonoBehaviour, IPointerClickHandler {
     readonly List<ARRaycastHit> raycastHits = new List<ARRaycastHit>();
 
     int shaderColorId;
-
-    Vector3 crosshairPosition;
-    Vector3 crosshairUp;
 
     #endregion
 
@@ -80,8 +73,8 @@ public class SpawnOnPlane : MonoBehaviour, IPointerClickHandler {
             var pose = hit.pose;
 
             crosshair.SetActive(true);
-            crosshairPosition = pose.position;
-            crosshairUp = pose.up;
+            crosshair.transform.position = pose.position;
+            crosshair.transform.up = pose.up;
 
             if (crosshairRenderer != null) {
                 var color = hit.hitType == TrackableType.PlaneWithinBounds
@@ -92,10 +85,6 @@ public class SpawnOnPlane : MonoBehaviour, IPointerClickHandler {
         } else {
             crosshair.SetActive(false);
         }
-
-        crosshair.transform.position =
-            Vector3.Lerp(crosshair.transform.position, crosshairPosition, crosshairLerp);
-        crosshair.transform.up = Vector3.Lerp(crosshair.transform.up, crosshairUp, crosshairLerp);
     }
 
     #endregion
