@@ -6,6 +6,8 @@ This project is a proof of concept for a see-through VR experience for mobile de
 
 The project currently works only on Android (ARCore), with iOS support planned in the future. An example scene is included which allows the user to place a model onto the AR plane directly in front of the camera.
 
+See Jon Dyne's blog post [Augmented Reality for Mobile VR Headsets](https://medium.com/@jon_54445/augmented-reality-for-mobile-vr-headsets-adc6d5ed11fe) for more information about the project.
+
 ## Architecture
 
 The graphics pipeline used to render a [barrel-distorted](https://en.wikipedia.org/wiki/Distortion_(optics)) image ready to be displayed via the VR headset is as follows:
