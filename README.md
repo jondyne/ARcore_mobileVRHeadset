@@ -36,6 +36,10 @@ Open the `Main.unity` scene and build & run it on your Android device (which obv
 
 In our tests we found that for a Samsung S8 "AR FOV" works best at around 38, with "FOV" at around 0.8. Fine tuning for your particular device will be needed.
 
+## Known issues
+
+There's currently a bug in AR Foundation which prevents videos placed in world space from being played. The screen flickers between rendering the AR scene correctly and rendering the video in fullscreen. If you have votes left on Unity's bug tracker, [please vote to get this issue fixed](https://issuetracker.unity3d.com/issues/ar-camera-does-not-work-with-video-player-on-arcore) as soon as possible.
+
 ## Planned features
 
 * seamless switching between see-through (barrel distorted) and regular AR modes
