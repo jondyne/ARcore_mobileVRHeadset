@@ -780,6 +780,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1522359617}
   - component: {fileID: 1522359616}
+  - component: {fileID: 1522359618}
   m_Layer: 0
   m_Name: AR Session
   m_TagString: Untagged
@@ -815,6 +816,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1522359618
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1522359615}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa850fbd5b8aded44846f96e35f1a9f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1769754721
 GameObject:
   m_ObjectHideFlags: 0
@@ -1104,12 +1117,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainCamera: {fileID: 2069872582}
   crosshairPrefab: {fileID: 1129228152599568, guid: 818d33371b9c643b4917221f223e3acf,
-    type: 2}
+    type: 3}
   crosshairInsidePlaneColor: {r: 0, g: 0.8773585, b: 0, a: 1}
   crosshairOutsidePlaneColor: {r: 1, g: 0.72505844, b: 0.015686274, a: 1}
   prefabToSpawn: {fileID: 1190091649889860, guid: 63e9325810cb14b9e8e0590d57d87afb,
-    type: 2}
-  sessionOrigin: {fileID: 623567135}
+    type: 3}
   raycastManager: {fileID: 623567139}
   scaleMinimum: 2
   scaleMaximum: 2
