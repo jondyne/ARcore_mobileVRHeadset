@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.Experimental.XR;
 using UnityEngine.XR.ARFoundation;
+using UnityEngine.XR.ARSubsystems;
 
 public class SpawnOnPlane : MonoBehaviour, IPointerClickHandler {
     #region Editor public fields
@@ -23,7 +23,7 @@ public class SpawnOnPlane : MonoBehaviour, IPointerClickHandler {
     GameObject prefabToSpawn;
 
     [SerializeField]
-    ARSessionOrigin sessionOrigin;
+    ARRaycastManager raycastManager;
 
     [SerializeField]
     float scaleMinimum = 0.2f;
@@ -67,8 +67,8 @@ public class SpawnOnPlane : MonoBehaviour, IPointerClickHandler {
 
         // Raycasting with only PlaneWithinInfinity always sets hitType to PlaneWithinInfinity, so
         // we need to potentially do two raycasts in order to color the crosshair properly.
-        if (sessionOrigin.Raycast(ray, raycastHits, TrackableType.PlaneWithinBounds) ||
-            sessionOrigin.Raycast(ray, raycastHits, TrackableType.PlaneWithinInfinity)) {
+        if (raycastManager.Raycast(ray, raycastHits, TrackableType.PlaneWithinBounds) ||
+            raycastManager.Raycast(ray, raycastHits, TrackableType.PlaneWithinInfinity)) {
             var hit = raycastHits[0];
             var pose = hit.pose;
 
@@ -93,7 +93,7 @@ public class SpawnOnPlane : MonoBehaviour, IPointerClickHandler {
 
     public void OnPointerClick(PointerEventData eventData) {
         var ray = mainCamera.ScreenPointToRay(screenCenter);
-        if (sessionOrigin.Raycast(ray, raycastHits, TrackableType.PlaneWithinInfinity)) {
+        if (raycastManager.Raycast(ray, raycastHits, TrackableType.PlaneWithinInfinity)) {
             var pose = raycastHits[0].pose;
             var spawnedObject = Instantiate(prefabToSpawn, pose.position, pose.rotation);
 

@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.XR;
 using UnityEngine.XR.ARFoundation;
 
 public sealed class SeeThroughController : MonoBehaviour {
@@ -13,6 +12,12 @@ public sealed class SeeThroughController : MonoBehaviour {
 
     [SerializeField]
     Material backgroundMaterial;
+
+    [SerializeField]
+    ARCameraManager cameraManager;
+
+    [SerializeField]
+    ARCameraBackground cameraBackground;
 
 #if UNITY_EDITOR
     [SerializeField]
@@ -28,11 +33,14 @@ public sealed class SeeThroughController : MonoBehaviour {
         set {
             backgroundMaterial = value;
 
-            seeThroughRenderer.Mode = ARRenderMode.MaterialAsBackground;
+            seeThroughRenderer.Mode = UnityEngine.XR.ARRenderMode.MaterialAsBackground;
             seeThroughRenderer.BackgroundMaterial = backgroundMaterial;
 
-            if (ARSubsystemManager.cameraSubsystem != null) {
-                ARSubsystemManager.cameraSubsystem.Material = backgroundMaterial;
+            if (cameraBackground != null) {
+                if (!cameraBackground.useCustomMaterial) {
+                    cameraBackground.useCustomMaterial = true;
+                }
+                cameraBackground.customMaterial = backgroundMaterial;
             }
         }
     }
@@ -63,13 +71,14 @@ public sealed class SeeThroughController : MonoBehaviour {
         seeThroughRenderer = new SeeThroughRenderer(seeThroughCamera, backgroundMaterial);
 #endif
 
-        var cameraSubsystem = ARSubsystemManager.cameraSubsystem;
-        if (cameraSubsystem != null) {
-            cameraSubsystem.Camera = seeThroughCamera;
-            cameraSubsystem.Material = BackgroundMaterial;
+        if (cameraBackground != null) {
+            if (!cameraBackground.useCustomMaterial) {
+                cameraBackground.useCustomMaterial = true;
+            }
+            cameraBackground.customMaterial = BackgroundMaterial;
         }
 
-        ARSubsystemManager.cameraFrameReceived += OnCameraFrameReceived;
+        cameraManager.frameReceived += OnCameraFrameReceived;
     }
 
     void OnGUI() {
@@ -105,7 +114,7 @@ public sealed class SeeThroughController : MonoBehaviour {
     #region Camera handling
 
     void SetupCameraIfNecessary() {
-        seeThroughRenderer.Mode = ARRenderMode.MaterialAsBackground;
+        seeThroughRenderer.Mode = UnityEngine.XR.ARRenderMode.MaterialAsBackground;
 
         if (seeThroughRenderer.BackgroundMaterial != BackgroundMaterial) {
             BackgroundMaterial = BackgroundMaterial;
