@@ -93,7 +93,9 @@ public class SpawnOnPlane : MonoBehaviour, IPointerClickHandler {
 
     public void OnPointerClick(PointerEventData eventData) {
         var ray = mainCamera.ScreenPointToRay(screenCenter);
-        if (raycastManager.Raycast(ray, raycastHits, TrackableType.PlaneWithinInfinity)) {
+        if (raycastManager.Raycast(ray, raycastHits, TrackableType.PlaneWithinBounds
+            | TrackableType.PlaneWithinInfinity)) {
+            
             var pose = raycastHits[0].pose;
             var spawnedObject = Instantiate(prefabToSpawn, pose.position, pose.rotation);
 
