@@ -99,9 +99,18 @@ public class SpawnOnPlane : MonoBehaviour, IPointerClickHandler {
             var pose = raycastHits[0].pose;
             var spawnedObject = Instantiate(prefabToSpawn, pose.position, pose.rotation);
 
-            var forward = -mainCamera.transform.forward;
-            forward.y = 0f;
-            spawnedObject.transform.forward = forward.normalized;
+            // Adjust the spawned object to look towards the camera (while staying
+            // perpendicular to the plane of a general orientation).
+            // Project the camera position to the tracked plane:
+            Vector3 distance = mainCamera.transform.position - spawnedObject.transform.position;
+            Vector3 normal = spawnedObject.transform.up.normalized;
+            Vector3 projectedPoint = mainCamera.transform.position
+                - (normal * Vector3.Dot(normal, distance));
+
+            // Rotate the spawned object towards the projected position:
+            Vector3 newForward = projectedPoint - spawnedObject.transform.position;
+            float angle = Vector3.Angle(spawnedObject.transform.forward, newForward);
+            spawnedObject.transform.Rotate(spawnedObject.transform.up, angle, Space.World);
 
             var randomScale = Random.Range(scaleMinimum, scaleMaximum);
             spawnedObject.transform.localScale = Vector3.one * randomScale;
