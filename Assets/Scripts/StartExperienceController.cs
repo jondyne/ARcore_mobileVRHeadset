@@ -34,21 +34,21 @@ public class StartExperienceController : MonoBehaviour{
     }
 
     void OnEnable() {
-        ARSubsystemManager.systemStateChanged += ArSubsystemStateChanged;
+        ARSession.stateChanged += ArSessionStateChanged;
     }
 
     void OnDisable() {
-        ARSubsystemManager.systemStateChanged -= ArSubsystemStateChanged;
+        ARSession.stateChanged -= ArSessionStateChanged;
     }
 
     #endregion
 
     #region AR handling
 
-    void ArSubsystemStateChanged(ARSystemStateChangedEventArgs eventArgs) {
-        Debug.Log($"AR system state changed to {eventArgs.state}");
+    void ArSessionStateChanged(ARSessionStateChangedEventArgs eventArgs) {
+        Debug.Log($"AR session state changed to {eventArgs.state}");
 
-        if (!initialized && eventArgs.state == ARSystemState.SessionTracking) {
+        if (!initialized && eventArgs.state == ARSessionState.SessionTracking) {
             initializeUi.SetActive(false);
             tapToSpawnUi.SetActive(true);
 
